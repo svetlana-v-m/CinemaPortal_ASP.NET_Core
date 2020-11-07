@@ -1,0 +1,64 @@
+﻿@model IEnumerable<CinemaPortal_ASP.NET_Core.Models.Cinema>
+@{
+    Layout = "_Layout";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Cinema gallery</title>
+</head>
+<body>
+    
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class=" col-md-4">
+                <div>
+                    <div class="well-sm">
+                        <div>
+                            <h3>"@item.Name"</h3>
+                            @if (item.Poster != null)
+                            {
+                                <img class="img-rounded" style="max-height:300px;max-width:250px" src="@Url.Action("GetImage", "Cinema", new { name = item.Name })" />
+                            }
+                            <div>
+
+                                <span class="display-label media-heading">
+                                    @Html.DisplayNameFor(model => item.FilmMaker)
+                                </span>
+                                <span class="display-field">
+                                    <b>@Html.DisplayFor(model => item.FilmMaker)</b>
+                                </span>
+                            </div>
+                            <div>
+                                <span class="display-label media-heading">
+                                    @Html.DisplayNameFor(model => item.Year)
+                                </span>
+                                <span class="display-field">
+                                    <b>@Html.DisplayFor(model => item.Year)</b>
+                                </span>
+
+                            </div>
+                        </div>
+                        @using (Html.BeginForm("Details", "Cinema", FormMethod.Post))
+                        {
+                            @Html.Hidden("Cinema.CinemaID", item.CinemaID);
+                            @Html.Hidden("Cinema.Description", item.Description);
+                            @Html.Hidden("Cinema.FilmMaker", item.FilmMaker);
+                            @Html.Hidden("Cinema.ImageMimeType", item.ImageMimeType);
+                            @Html.Hidden("Cinema.Name", item.Name);
+                            @Html.Hidden("Cinema.Poster", item.Poster);
+                            @Html.Hidden("Cinema.UserName", item.UserName);
+                            @Html.Hidden("Cinema.Year", item.Year);
+
+                            <input type="submit" class="btn btn-primary" value="Details" />
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <br />
+</body>
+</html>

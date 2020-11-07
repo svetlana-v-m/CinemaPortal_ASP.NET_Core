@@ -1,0 +1,21 @@
+﻿@model CinemaPortal_ASP.NET_Core.Models.User
+
+<h4>Profile</h4>
+<div class="row">
+    <div class="col-md-6">
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="UserName"></label>
+                <input asp-for="UserName" class="form-control" disabled />
+            </div>
+            <button id="update-profile-button" type="submit" class="btn btn-primary">Save</button>
+        </form>
+        <form asp-controller="Users" asp-action="Delete" asp-route-id="Id" method="post">
+            <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="model.Id">Изменить</a>
+            <a class="btn btn-sm btn-primary" asp-action="ChangePassword" asp-route-id="model.Id">Сменить пароль</a>
+            <button type="submit" class="btn btn-sm btn-danger">
+                Удалить
+            </button>
+        </form>
+    </div>
+</div>
