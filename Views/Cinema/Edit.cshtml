@@ -1,0 +1,82 @@
+﻿@model CinemaPortal_ASP.NET_Core.ViewModels.EditCinemaViewModel
+
+@using (Html.BeginForm("Edit", "Cinema", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.Hidden("Cinema.CinemaID", Model.Cinema.CinemaID)
+    @Html.Hidden("Cinema.UserName", Model.Cinema.UserName)
+    @Html.Hidden("Cinema.ImageMimeType", Model.Cinema.ImageMimeType)
+    @Html.Hidden("Cinema.ImageMimeType", Model.Cinema.Poster)
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="media">
+                    @if (Model.Cinema.Poster != null)
+                    {
+                        <div>
+                            <img class="img-responsive" style="max-height:450px" src="@Url.Action("GetImage", "Cinema", new { name = Model.Cinema.Name })" />
+                        </div>
+                    }
+                </div>
+
+            </div>
+            <div class="col-md-6">
+                <div class="jumbotron my-jumbotron">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Cinema.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Cinema.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Cinema.Name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Cinema.FilmMaker, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Cinema.FilmMaker, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Cinema.FilmMaker, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Cinema.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.TextAreaFor(model => model.Cinema.Description, 11, 50, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Cinema.Description, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Cinema.Year, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Cinema.Year, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Cinema.Year, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.PostedFile, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @using (Html.BeginForm())
+                                {
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            @Html.TextBoxFor(m => m.PostedFile, new { type ="image", @class = "form-control" })
+                                        </div>
+                                        <div class="col-md-1">
+                                            <input type="reset" class="btn-sm btn-primary" value="X" />
+                                        </div>
+
+                                    </div>
+                                }
+                                @Html.ValidationMessageFor(model => model.PostedFile, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                    @Html.ActionLink("Отмена", "Details", "Cinema", routeValues:new { Cinema=Model.Cinema},htmlAttributes: new { @class = "btn btn-primary" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+}

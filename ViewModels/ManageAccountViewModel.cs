@@ -1,4 +1,5 @@
 ﻿using CinemaPortal_ASP.NET_Core.Models;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,9 @@ namespace CinemaPortal_ASP.NET_Core.ViewModels
 {
     public class ManageAccountViewModel
     {
-        public User user { get; set; }
+        public bool HasPassword { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
+        
     }
 }

@@ -1,0 +1,31 @@
+﻿@model CinemaPortal_ASP.NET_Core.ViewModels.ChangeEmailViewModel
+@{
+    ViewBag.Title = "Редактирование email";
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("ChangeEmail", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+
+<div class="form-group">
+    @Html.LabelFor(m => m.OldEmail, new { @class = "col-md-2 control-label" })
+    <div class="col-md-10">
+        <p class="form-control">@Model.OldEmail</p>
+    </div>
+    @Html.LabelFor(m => m.NewEmail, new { @class = "col-md-2 control-label" })
+    <div class="col-md-10">
+       @Html.TextBoxFor(m => m.NewEmail, new { @class = "form-control" })
+    </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Сохранить" class="btn btn-primary" />
+            @Html.ActionLink("Cancel", "CancelEdit", "Account", htmlAttributes: new { @class = "btn btn-primary" })
+        </div>
+    </div>
+    }

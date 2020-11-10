@@ -30,7 +30,7 @@ namespace CinemaPortal_ASP.NET_Core
             
             services.AddDbContext<ApplicationIdentityContext>(options => options.UseSqlServer(Configuration.GetConnectionString("IdentityDbConnection")));
             services.AddIdentity<User, IdentityRole>(opts => {
-                opts.User.AllowedUserNameCharacters="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                opts.User.AllowedUserNameCharacters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ àÀáÁâÂãÃäÄåÅ¸¨æÆçÇèÈêÊëËìÌíÍîÎïÏğĞñÑòÒóÓôÔõÕöÖ÷×øØùÙúÚûÛüÜıİşŞÿß";
             })
                 .AddEntityFrameworkStores<ApplicationIdentityContext>();
             services.AddDbContext<CinemaDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("CinemaDbConnection")));

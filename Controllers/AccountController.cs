@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using CinemaPortal_ASP.NET_Core.Helpers;
 using CinemaPortal_ASP.NET_Core.Models;
@@ -16,7 +17,7 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
 
-        public AccountController(UserManager<User> userManager,SignInManager<User> signInManager)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -33,7 +34,7 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = new User { Email = model.Email, UserName=model.UserName };
+                User user = new User { Email = model.Email, UserName = model.UserName };
                 // добавляем пользователя
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -109,7 +110,7 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
-                if(user!=null||(await _userManager.IsEmailConfirmedAsync(user)))
+                if (user != null || (await _userManager.IsEmailConfirmedAsync(user)))
                 {
                     return View("ForgotPasswordConfirmation");
                 }
@@ -122,14 +123,14 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
             }
             return View(model);
         }
-        
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ResetPassword(string code = null)
         {
             return code == null ? View("Error") : View();
         }
-        
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -149,17 +150,166 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
             {
                 return View("ResetPasswordConfirmation");
             }
-            foreach(var error in result.Errors)
+            foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
             return View(model);
         }
-        
+
+        // GET: /Manage/Index
         [HttpGet]
-        public IActionResult Manage(User user)
+        public async Task<ActionResult> Manage(ManageMessageId? message)
         {
-            return View(user);
+            ViewBag.StatusMessage =
+                message == ManageMessageId.ChangeUserNameSuccess ? "Ваше имя изменено."
+                : message == ManageMessageId.ChangeEmailSuccess ? "Ваш email изменен."
+                : message == ManageMessageId.ChangePasswordSuccess ? "Ваш пароль изменен."
+                : message == ManageMessageId.Error ? "Произошла ошибка."
+                : "";
+            
+           
+             var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            if (user == null) return NotFound();
+            var model = new ManageAccountViewModel
+                {
+                    UserName = user.UserName,
+                    Email = user.Email,
+                };
+                return View(model);
+            
+
+        }
+
+        // GET: /Manage/ChangeUserName
+        [HttpGet]
+        public ActionResult ChangeUserName()
+        {
+            ChangeUserNameViewModel model = new ChangeUserNameViewModel { OldUserName = User.Identity.Name };
+            return View(model);
+        }
+ 
+        // POST: /Manage/ChangeUserName
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeUserName(ChangeUserNameViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+                if(user!=null)
+                {
+                    user.UserName = model.NewUserName;
+                    var result = await _userManager.UpdateAsync(user);
+                    if (result.Succeeded) 
+                    {
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        return RedirectToAction("Manage", new { Message = ManageMessageId.ChangeUserNameSuccess }); 
+                    }
+                    else return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
+
+                }
+                else return NotFound();
+        }
+        
+        // GET: /Manage/ChangeEmail
+        [HttpGet]
+        public async Task<ActionResult> ChangeEmail()
+        {
+            ChangeEmailViewModel model = new ChangeEmailViewModel();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            model.OldEmail = user.Email;
+            return View(model);
+        }
+        // POST: /Manage/ChangeEmail
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeEmail(ChangeEmailViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            model.OldEmail = user.Email;
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            if (user != null)
+            {
+                user.Email = model.NewEmail;
+
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("Manage", new { Message = ManageMessageId.ChangeEmailSuccess });
+                }
+
+                else return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
+
+            }
+            else return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
+
+        }
+        
+        // GET: /Manage/ChangePassword
+        [HttpGet]
+        public ActionResult ChangePassword()
+        {
+             return View();
+        }
+
+        //
+        // POST: /Manage/ChangePassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            if (user != null)
+            {
+                var _passwordValidator =
+                HttpContext.RequestServices.GetService(typeof(IPasswordValidator<User>)) as IPasswordValidator<User>;
+                var _passwordHasher =
+                    HttpContext.RequestServices.GetService(typeof(IPasswordHasher<User>)) as IPasswordHasher<User>;
+                IdentityResult result =
+                await _passwordValidator.ValidateAsync(_userManager, user, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    user.PasswordHash = _passwordHasher.HashPassword(user, model.NewPassword);
+                    await _userManager.UpdateAsync(user);
+                    return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
+                }
+                else return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
+            }
+            else return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
+        }
+
+        public ActionResult CancelEdit()
+        {
+            return RedirectToAction("Manage");
+        }
+        public enum ManageMessageId
+        {
+            ChangeUserNameSuccess,
+            ChangeEmailSuccess,
+            ChangePasswordSuccess,
+            Error
+        }
+
+        
+        private void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
         }
     }
 }

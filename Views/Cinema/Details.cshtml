@@ -1,72 +1,83 @@
 ﻿@model CinemaPortal_ASP.NET_Core.Models.Cinema;
 
-<div class="panel-body">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="media">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="media">
 
-                @if (Model.Poster != null)
-                {
-                    <div>
-                        <img class="img-responsive" style="max-height:450px;max-width:350px" src="@Url.Action("GetImage", "Cinema", new { name = Model.Name })" />
-                    </div>
-                }
-            </div>
-        </div>
-        <div class="col-md-6">
-
-            <div class="jumbotron my-jumbotron">
-                <h2>"@Model.Name"</h2>
-                <div>
-                    <span class="display-label">
-                        <b>@Html.DisplayNameFor(model => model.FilmMaker)</b>
-                    </span>
-                    <span class="display-field">
-                        @Html.DisplayFor(model => model.FilmMaker)
-                    </span>
-                </div>
-                <div>
-                    <span class="display-label">
-                        <b>@Html.DisplayNameFor(model => model.Year)</b>
-                    </span>
-                    <span class="display-field">
-                        @Html.DisplayFor(model => model.Year)
-                    </span>
-
-                </div>
-
-                <hr />
-                <div>
-                    <span class="display-label">
-                        <b>@Html.DisplayNameFor(model => model.Description)</b>
-                    </span>
-                    <span class="display-field">
-                        @Html.DisplayFor(model => model.Description)
-                    </span>
-                </div>
-                <hr />
-                <p class="bottom-left" style="font-size:10pt"><i>Posted by @Model.UserName</i></p>
-
-                @if (User.Identity.IsAuthenticated )
-                {
-                    using (Html.BeginForm("EditDetails", "Cinema", FormMethod.Post))
+                    @if (Model.Poster != null)
                     {
-                        @Html.Hidden("Cinema.CinemaID", Model.CinemaID);
-                        @Html.Hidden("Cinema.Description", Model.Description);
-                        @Html.Hidden("Cinema.FilmMaker", Model.FilmMaker);
-                        @Html.Hidden("Cinema.ImageMimeType", Model.ImageMimeType);
-                        @Html.Hidden("Cinema.Name", Model.Name);
-                        @Html.Hidden("Cinema.Poster", Model.Poster);
-                        @Html.Hidden("Cinema.UserName", Model.UserName);
-                        @Html.Hidden("Cinema.Year", Model.Year);
-
-                        <button type="submit" name="action" class="btn btn-primary" value="edit">Edit</button>
-                        <button type="submit" name="action" class="btn btn-primary" value="delete">Delete</button>
+                        <div>
+                            <img class="img-responsive" style="max-height:450px;max-width:350px" src="@Url.Action("GetImage", "Cinema", new { name = Model.Name })" />
+                        </div>
                     }
-                }
+                </div>
+            </div>
+            <div class="col-md-6">
+
+                <div class="jumbotron my-jumbotron">
+                    <h2>"@Model.Name"</h2>
+                    <div>
+                        <span class="display-label">
+                            <b>@Html.DisplayNameFor(model => model.FilmMaker)</b>
+                        </span>
+                        <span class="display-field">
+                            @Html.DisplayFor(model => model.FilmMaker)
+                        </span>
+                    </div>
+                    <div>
+                        <span class="display-label">
+                            <b>@Html.DisplayNameFor(model => model.Year)</b>
+                        </span>
+                        <span class="display-field">
+                            @Html.DisplayFor(model => model.Year)
+                        </span>
+
+                    </div>
+
+                    <hr />
+                    <div>
+                        <span class="display-label">
+                            <b>@Html.DisplayNameFor(model => model.Description)</b>
+                        </span>
+                        <span class="display-field">
+                            @Html.DisplayFor(model => model.Description)
+                        </span>
+                    </div>
+                    <hr />
+                    <p class="bottom-left" style="font-size:10pt"><i>Posted by @Model.UserName</i></p>
+
+                    @if (User.Identity.IsAuthenticated && Model.UserName.Trim().ToUpper().Equals(User.Identity.Name.Trim().ToUpper()))
+                    {
+                        @*using (Html.BeginForm("Edit", "Cinema", FormMethod.Post))
+                        {
+                            @Html.Hidden("Cinema.CinemaID", Model.CinemaID);
+                            @Html.Hidden("Cinema.Description", Model.Description);
+                            @Html.Hidden("Cinema.FilmMaker", Model.FilmMaker);
+                            @Html.Hidden("Cinema.ImageMimeType", Model.ImageMimeType);
+                            @Html.Hidden("Cinema.Name", Model.Name);
+                            @Html.Hidden("Cinema.Poster", Model.Poster);
+                            @Html.Hidden("Cinema.UserName", Model.UserName);
+                            @Html.Hidden("Cinema.Year", Model.Year);*@
+
+                            @*<button type="submit" name="action" class="btn btn-primary" value="edit">Изменить</button>
+                            <button type="submit" name="action" class="btn btn-primary" value="delete">Удалить</button>*@
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    @Html.ActionLink("Изменить", "Edit", "Cinema", routeValues: new { name = Model.Name }, htmlAttributes: new { @class = "btn btn-primary" })
+                                    @Html.ActionLink("Удалить", "Delete", "Cinema", htmlAttributes: new { @class = "btn btn-primary" })
+
+                                </div>
+                            </div>
+                        //}
+
+                    }
+                </div>
+
             </div>
         </div>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Назад</a>
     </div>
-</div>
+
 
 

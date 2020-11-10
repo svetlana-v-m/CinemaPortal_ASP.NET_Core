@@ -1,4 +1,8 @@
-﻿@model IEnumerable<CinemaPortal_ASP.NET_Core.Models.Cinema>
+﻿@using CinemaPortal_ASP.NET_Core.ViewModels;
+
+@model IndexViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper CinemaPortal_ASP.NET_Core.Helpers.PageLinkTagHelper, CinemaPortal_ASP.NET_Core
 @{
     Layout = "_Layout";
 }
@@ -6,12 +10,12 @@
 
 <html>
 <head>
-    <title>Cinema gallery</title>
+    <title>Коллекция кино</title>
+
 </head>
 <body>
-    
     <div class="row">
-        @foreach (var item in Model)
+        @foreach (var item in Model.CinemaCollection)
         {
             <div class=" col-md-4">
                 <div>
@@ -43,22 +47,26 @@
                         </div>
                         @using (Html.BeginForm("Details", "Cinema", FormMethod.Post))
                         {
-                            @Html.Hidden("Cinema.CinemaID", item.CinemaID);
-                            @Html.Hidden("Cinema.Description", item.Description);
-                            @Html.Hidden("Cinema.FilmMaker", item.FilmMaker);
-                            @Html.Hidden("Cinema.ImageMimeType", item.ImageMimeType);
-                            @Html.Hidden("Cinema.Name", item.Name);
-                            @Html.Hidden("Cinema.Poster", item.Poster);
-                            @Html.Hidden("Cinema.UserName", item.UserName);
-                            @Html.Hidden("Cinema.Year", item.Year);
+                            @Html.Hidden("Cinema.CinemaID", item.CinemaID)
+                            @Html.Hidden("Cinema.Description", item.Description)
+                            @Html.Hidden("Cinema.FilmMaker", item.FilmMaker)
+                            @Html.Hidden("Cinema.ImageMimeType", item.ImageMimeType)
+                            @Html.Hidden("Cinema.Name", item.Name)
+                            @Html.Hidden("Cinema.Poster", item.Poster)
+                            @Html.Hidden("Cinema.UserName", item.UserName)
+                            @Html.Hidden("Cinema.Year", item.Year)
 
-                            <input type="submit" class="btn btn-primary" value="Details" />
+                            <input type="submit" class="btn btn-primary" value="Подробнее" />
                         }
                     </div>
                 </div>
             </div>
+
         }
+
     </div>
     <br />
+    
+    <page-link page-model="Model.PageViewModel" page-action="Index"></page-link>
 </body>
 </html>
