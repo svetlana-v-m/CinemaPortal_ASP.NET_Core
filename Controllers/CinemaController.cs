@@ -56,6 +56,7 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
             return View(dvm);
         }
 
+        [Authorize]
         public ActionResult Create()
         {
             if (User.Identity.IsAuthenticated) return View();
@@ -122,6 +123,8 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
             }
   
         }
+
+        [Authorize]
         public ActionResult Delete(int id)
         {
             Cinema cinema = _context.FindCinemaByID(id);
