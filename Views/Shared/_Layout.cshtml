@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cinema Portal</title>
+    <title>Кинопортал</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
@@ -21,12 +21,10 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                         <li class="nav-item">
-                            @*@Html.ActionLink(User.Identity.Name, "Manage", "Account")*@
-                            <form method="get" asp-controller="Account" asp-action="Manage" >
+                             <form method="get" asp-controller="Account" asp-action="Manage" >
                                 <input type="submit" class="nav-link btn btn-link text-dark" value="@User.Identity.Name" />
                             </form>
-                            @*<a class="nav-link text-dark" asp-controller="Users" asp-action="Edit" > @User.Identity.Name</a>*@
-                        </li>
+                         </li>
                             <li class="nav-item">
                                 <form method="post" asp-controller="Account" asp-action="Logout">
                                     <input type="submit" class="nav-link btn btn-link text-dark" value="Выход" />
@@ -46,6 +44,9 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Все фильмы</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Cinema" asp-action="MyCinema">Мои фильмы</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Cinema" asp-action="Create">Добавить фильм</a>

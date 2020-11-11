@@ -1,0 +1,47 @@
+﻿@using CinemaPortal_ASP.NET_Core.ViewModels;
+
+@model IndexViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper CinemaPortal_ASP.NET_Core.Helpers.PageLinkTagHelper, CinemaPortal_ASP.NET_Core
+@{
+    Layout = "_Layout";
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Моя коллекция кино</title>
+
+</head>
+<body>
+    <div class="row">
+        <div class="card-group">
+            @foreach (var item in Model.CinemaCollection)
+            {
+                <div class="col-md-4">
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">@item.Name</h2>
+                            </div>
+                            <div class="card-body">
+                                   @if (item.Poster != null)
+                                    {
+                                        <img class="card-img-top" src="@Url.Action("GetImage", "Cinema", new { name = item.Name })" />
+                                    }
+                                
+                            </div>
+                            @Html.ActionLink("Подробнее", "Details", "Cinema", routeValues: new { id = item.CinemaID, listName="MyCinema" }, htmlAttributes: new { @class = "btn btn-primary" })
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <br />
+    </div>
+    @if (Model.PageViewModel.TotalPages > 1)
+    {
+        <page-link page-model="Model.PageViewModel" page-action="Index"></page-link>
+    }
+</body>
+</html>

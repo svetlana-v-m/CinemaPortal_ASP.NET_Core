@@ -1,5 +1,3 @@
-using System;
-
 namespace CinemaPortal_ASP.NET_Core.Models
 {
     public class ErrorViewModel

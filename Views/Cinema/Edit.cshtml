@@ -60,7 +60,9 @@
                                 {
                                     <div class="row">
                                         <div class="col-md-10">
-                                            @Html.TextBoxFor(m => m.PostedFile, new { type ="image", @class = "form-control" })
+                                            <span class="editor-field">
+                                                <input type="file" name="poster" accept="image/*" class="form-control" />
+                                            </span>
                                         </div>
                                         <div class="col-md-1">
                                             <input type="reset" class="btn-sm btn-primary" value="X" />

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using CinemaPortal_ASP.NET_Core.Models;
 using CinemaPortal_ASP.NET_Core.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -27,10 +24,36 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
             else return null;
         }
 
-
-        public IActionResult Details(Cinema cinema)
+        [HttpGet]
+        [Authorize]
+        public IActionResult MyCinema(int page=1)
         {
-            return View(cinema);
+            if(User.Identity.IsAuthenticated)
+            {
+                int pageSize = 3;
+                var collection = _context.CinemaCollection.Where(c => c.UserName.Trim().ToUpper().Equals(User.Identity.Name.Trim().ToUpper())).ToList();
+                var count = collection.Count();
+                var items = collection.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                PageViewModel pvm = new PageViewModel(count, page, pageSize,"MyCinema");
+                IndexViewModel ivm = new IndexViewModel
+                {
+                    PageViewModel = pvm,
+                    CinemaCollection = items
+                };
+                return View(ivm);
+            }
+            else
+            {
+                return RedirectToAction("Login", "Account");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Details(int id, string listName)
+        {
+            Cinema cinema = _context.FindCinemaByID(id);
+            DetailsViewModel dvm = new DetailsViewModel { Cinema = cinema, ListName = listName };
+            return View(dvm);
         }
 
         public ActionResult Create()
@@ -79,35 +102,32 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
 
         [Authorize]
         [HttpPost]
-        public ActionResult Edit(EditCinemaViewModel model)
+        public ActionResult Edit(Cinema cinema,IFormFile poster)
         {
-            int tempId = model.Cinema.CinemaID;
             if (!ModelState.IsValid)
             {
-                return View("Edit", model);
+                return View("Edit", cinema);
             }
             else
             {
-                if (model.PostedFile != null)
+                if (poster != null)
                 {
-                    model.Cinema.ImageMimeType = model.PostedFile.ContentType;
-                    model.Cinema.Poster = new byte[model.PostedFile.Length];
-                    using (var binaryReader = new BinaryReader(model.PostedFile.OpenReadStream())) model.Cinema.Poster = binaryReader.ReadBytes((int)model.PostedFile.Length);
+                    cinema.ImageMimeType = poster.ContentType;
+                    cinema.Poster = new byte[poster.Length];
+                    using (var binaryReader = new BinaryReader(poster.OpenReadStream())) cinema.Poster = binaryReader.ReadBytes((int)poster.Length);
                 }
-                Cinema _cinema = _context.FindCinemaByID(model.Cinema.CinemaID);
-                _cinema.Description = model.Cinema.Description;
-                _cinema.FilmMaker = model.Cinema.FilmMaker;
-                _cinema.Name = model.Cinema.Name;
-                _cinema.UserName = model.Cinema.UserName;
-                _cinema.Year = model.Cinema.Year;
-                _cinema.ImageMimeType = model.Cinema.ImageMimeType;
-                _cinema.Poster = model.Cinema.Poster;
-                _context.SaveChangesAsync();
-                
-                return RedirectToAction("Details", new { cinema = _context.FindCinemaByID(tempId) });
+                 _context.Update(cinema);
+                _context.SaveChanges();
+                return RedirectToAction("Details", new { id = cinema.CinemaID });
             }
   
         }
-
+        public ActionResult Delete(int id)
+        {
+            Cinema cinema = _context.FindCinemaByID(id);
+            _context.CinemaCollection.Remove(cinema);
+            _context.SaveChanges();
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

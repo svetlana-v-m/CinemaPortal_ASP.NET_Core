@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CinemaPortal_ASP.NET_Core.ViewModels
 {
@@ -9,11 +6,13 @@ namespace CinemaPortal_ASP.NET_Core.ViewModels
     {
         public int PageNumber { get; private set; }
         public int TotalPages { get; private set; }
+        public string ListName { get; private set; }
 
-        public PageViewModel(int count, int pageNumber, int pageSize)
+        public PageViewModel(int count, int pageNumber, int pageSize, string listName)
         {
             PageNumber = pageNumber;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+            ListName = listName;
         }
 
         public bool HasPreviousPage
