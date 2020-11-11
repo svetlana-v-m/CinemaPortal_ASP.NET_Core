@@ -11,46 +11,48 @@
 <html>
 <head>
     <title>Коллекция кино</title>
-
+    
 </head>
 <body>
+    @if (Model.CinemaCollection.Count() == 0)
+    {
+        <p>В коллекции нет ни одного кино</p>
+    }
     <div class="row">
         @foreach (var item in Model.CinemaCollection)
         {
             <div class=" col-md-4">
+                <h3>@item.Name</h3>
+                @if (item.Poster != null)
+                {
+                    <img class="img-rounded" style="max-height:300px;max-width:250px" src="@Url.Action("GetImage", "Cinema", new { name = item.Name })" />
+                }
                 <div>
-                      <div>
-                            <h3>@item.Name</h3>
-                            @if (item.Poster != null)
-                            {
-                                <img class="img-rounded" style="max-height:300px;max-width:250px" src="@Url.Action("GetImage", "Cinema", new { name = item.Name })" />
-                            }
-                            <div>
-
-                                <span class="display-label media-heading">
-                                    @Html.DisplayNameFor(model => item.FilmMaker)
-                                </span>
-                                <span class="display-field">
-                                    <b>@Html.DisplayFor(model => item.FilmMaker)</b>
-                                </span>
-                            </div>
-                            <div>
-                                <span class="display-label media-heading">
-                                    @Html.DisplayNameFor(model => item.Year)
-                                </span>
-                                <span class="display-field">
-                                    <b>@Html.DisplayFor(model => item.Year)</b>
-                                </span>
-
-                            </div>
-                        </div>
-                        @Html.ActionLink("Подробнее","Details","Cinema",routeValues: new { id=item.CinemaID, listName="AllCinema"},htmlAttributes: new { @class = "btn btn-primary" })
-                     </div>
+                    <span class="display-label media-heading">
+                        @Html.DisplayNameFor(model => item.FilmMaker)
+                    </span>
+                    <span class="display-field">
+                        <b>@Html.DisplayFor(model => item.FilmMaker)</b>
+                    </span>
                 </div>
+                <div>
+                    <span class="display-label media-heading">
+                        @Html.DisplayNameFor(model => item.Year)
+                    </span>
+                    <span class="display-field">
+                        <b>@Html.DisplayFor(model => item.Year)</b>
+                    </span>
+                </div>
+                @Html.ActionLink("Подробнее", "Details", "Cinema", routeValues: new { id = item.CinemaID, listName = "AllCinema" }, htmlAttributes: new { @class = "btn btn-primary" })
+            </div>
         }
     </div>
     <br />
+
     @if (Model.PageViewModel.TotalPages > 1)
-    { <page-link page-model="Model.PageViewModel" page-action="Index"></page-link>}
+    {
+        <page-link page-model="Model.PageViewModel" page-action="Index"></page-link>
+        
+    }
 </body>
 </html>

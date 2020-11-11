@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using CinemaPortal_ASP.NET_Core.Models;
 using CinemaPortal_ASP.NET_Core.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -49,9 +50,9 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details(int id, string listName)
+        public async Task<IActionResult> Details(int id, string listName)
         {
-            Cinema cinema = _context.FindCinemaByID(id);
+            Cinema cinema = await _context.FindCinemaByIDAsync(id);
             DetailsViewModel dvm = new DetailsViewModel { Cinema = cinema, ListName = listName };
             return View(dvm);
         }
@@ -65,7 +66,7 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult Create(Cinema newCinema, IFormFile poster)
+        public async Task<IActionResult> Create(Cinema newCinema, IFormFile poster)
         {
             if (!ModelState.IsValid)
             {
@@ -84,26 +85,27 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
 
                 }
                 newCinema.UserName = User.Identity.Name;
-                _context.Add(newCinema);
-                _context.SaveChangesAsync();
-                return RedirectToAction("Details", new { id = newCinema.CinemaID });
+                await _context.AddAsync(newCinema);
+                await _context.SaveChangesAsync();
+                var cinema = await _context.FindCinemaByTitleAsync(newCinema.Name);
+                return RedirectToAction("Details", new { id = cinema.CinemaID, listName="AllCinema" });
             }
         }
 
         [Authorize]
         [HttpGet]
-        public ActionResult Edit(string name)
+        public ActionResult Edit(string name, string listName)
         {
             Cinema c = _context.FindCinemaByTitle(name);
             if (c == null) return NotFound();
-            EditCinemaViewModel evm = new EditCinemaViewModel { Cinema = c };
+            EditCinemaViewModel evm = new EditCinemaViewModel { Cinema = c,ListName=listName };
             return View(evm);
         }
 
 
         [Authorize]
         [HttpPost]
-        public ActionResult Edit(Cinema cinema,IFormFile poster)
+        public ActionResult Edit(Cinema cinema,IFormFile poster, string _listName)
         {
             if (!ModelState.IsValid)
             {
@@ -119,18 +121,19 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
                 }
                  _context.Update(cinema);
                 _context.SaveChanges();
-                return RedirectToAction("Details", new { id = cinema.CinemaID });
+                return RedirectToAction("Details", new { id = cinema.CinemaID, listName= _listName});
             }
   
         }
 
         [Authorize]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int id, string listName)
         {
             Cinema cinema = _context.FindCinemaByID(id);
             _context.CinemaCollection.Remove(cinema);
             _context.SaveChanges();
-            return RedirectToAction("Index", "Home");
+            if (listName == "AllCinema") return RedirectToAction("Index", "Home");
+            else return RedirectToAction("MyCinema", "Cinema");
         }
     }
 }

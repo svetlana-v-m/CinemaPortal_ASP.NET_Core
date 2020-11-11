@@ -11,15 +11,18 @@
 <html>
 <head>
     <title>Моя коллекция кино</title>
-
 </head>
 <body>
+    @if (Model.CinemaCollection.Count() == 0)
+    {
+        <p>Вы еще не добавили ни одного кино</p>
+    }
     <div class="row">
         <div class="card-group">
             @foreach (var item in Model.CinemaCollection)
             {
-                <div class="col-md-4">
-                    <div>
+                
+                    
                         <div class="card">
                             <div class="card-header">
                                 <h2 class="card-title">@item.Name</h2>
@@ -33,15 +36,15 @@
                             </div>
                             @Html.ActionLink("Подробнее", "Details", "Cinema", routeValues: new { id = item.CinemaID, listName="MyCinema" }, htmlAttributes: new { @class = "btn btn-primary" })
                         </div>
-                    </div>
-                </div>
+                    
+                
             }
         </div>
         <br />
     </div>
     @if (Model.PageViewModel.TotalPages > 1)
     {
-        <page-link page-model="Model.PageViewModel" page-action="Index"></page-link>
+        <page-link page-model="Model.PageViewModel" page-action="MyCinema"></page-link>
     }
 </body>
 </html>

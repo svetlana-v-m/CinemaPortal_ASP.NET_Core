@@ -75,7 +75,7 @@
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Сохранить</button>
-                    @Html.ActionLink("Отмена", "Details", "Cinema", routeValues:new { Cinema=Model.Cinema},htmlAttributes: new { @class = "btn btn-primary" })
+                    @Html.ActionLink("Отмена", "Details", "Cinema", routeValues:new { Cinema=Model.Cinema, listName=Model.ListName},htmlAttributes: new { @class = "btn btn-primary" })
                 </div>
             </div>
         </div>

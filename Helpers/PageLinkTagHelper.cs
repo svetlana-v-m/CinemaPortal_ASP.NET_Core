@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using System.Security.Policy;
 
 namespace CinemaPortal_ASP.NET_Core.Helpers
 {
@@ -27,26 +28,45 @@ namespace CinemaPortal_ASP.NET_Core.Helpers
             
             // набор ссылок будет представлять список ul
             TagBuilder tag = new TagBuilder("ul");
-            tag.AddCssClass("pagination");
-
-            // формируем три ссылки - на текущую, предыдущую и следующую
-            TagBuilder currentItem = CreateTag(PageModel.PageNumber, urlHelper);
+            tag.AddCssClass("pagination justify-content-center");
 
             // создаем ссылку на предыдущую страницу, если она есть
             if (PageModel.HasPreviousPage)
             {
-                TagBuilder prevItem = CreateTag(PageModel.PageNumber - 1, urlHelper);
-                tag.InnerHtml.AppendHtml(prevItem);
+                TagBuilder backBtn = CreateBtn(PageModel.PageNumber - 1, urlHelper, "Назад");
+                //TagBuilder prevItem = CreateTag(PageModel.PageNumber - 1, urlHelper);
+                tag.InnerHtml.AppendHtml(backBtn);
+                //tag.InnerHtml.AppendHtml(prevItem);
             }
+            // формируем три ссылки - на текущую, предыдущую и следующую
 
-            tag.InnerHtml.AppendHtml(currentItem);
+            for (int i=1;i<=PageModel.TotalPages;i++)
+            {
+                TagBuilder currentItem = CreateTag(i, urlHelper);
+                tag.InnerHtml.AppendHtml(currentItem);
+            }
+            
+
+            
+
+            
             // создаем ссылку на следующую страницу, если она есть
             if (PageModel.HasNextPage)
             {
-                TagBuilder nextItem = CreateTag(PageModel.PageNumber + 1, urlHelper);
-                tag.InnerHtml.AppendHtml(nextItem);
+                
+                TagBuilder nextBtn = CreateBtn(PageModel.PageNumber + 1, urlHelper,"Вперед");
+                tag.InnerHtml.AppendHtml(nextBtn);
             }
             output.Content.AppendHtml(tag);
+        }
+
+        TagBuilder CreateBtn(int pageNumber,IUrlHelper urlHelper, string btnText)
+        {
+            TagBuilder link = new TagBuilder("a");
+            link.Attributes["href"] = urlHelper.Action(PageAction, new { page = pageNumber });
+            link.AddCssClass("page-link");
+            link.InnerHtml.Append(btnText);
+            return link;
         }
 
         TagBuilder CreateTag(int pageNumber, IUrlHelper urlHelper)

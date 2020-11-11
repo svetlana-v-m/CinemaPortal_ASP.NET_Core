@@ -9,5 +9,6 @@ namespace CinemaPortal_ASP.NET_Core.ViewModels
         public Cinema Cinema { get; set; }
         [DisplayName("Постер:")]
         public IFormFile PostedFile { get; set; }
+        public string ListName { get; set; }
     }
 }
