@@ -8,7 +8,7 @@
                     @if (Model.Cinema.Poster != null)
                     {
                         <div>
-                            <img class="img-responsive" style="max-height:450px;max-width:350px" src="@Url.Action("GetImage", "Cinema", new { name = Model.Cinema.Name })" />
+                            <img class="img-responsive" style="max-height:450px;max-width:350px" src="@Url.Action("GetImage", "Cinema", new { id = Model.Cinema.CinemaID })" />
                         </div>
                     }
                 </div>
@@ -51,7 +51,7 @@
                     {
                         <div class="form-group">
                             <div class="col-md-offset-2 col-md-10">
-                                @Html.ActionLink("Изменить", "Edit", "Cinema", routeValues: new { name = Model.Cinema.Name, listName=Model.ListName }, htmlAttributes: new { @class = "btn btn-primary" })
+                                @Html.ActionLink("Изменить", "Edit", "Cinema", routeValues: new { id=Model.Cinema.CinemaID, listName=Model.ListName }, htmlAttributes: new { @class = "btn btn-primary" })
                                 @Html.ActionLink("Удалить", "Delete", "Cinema", routeValues: new { id = Model.Cinema.CinemaID, listName=Model.ListName }, htmlAttributes: new { @class = "btn btn-primary" })
                             </div>
                         </div>

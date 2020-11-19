@@ -25,7 +25,7 @@
                 <h3>@item.Name</h3>
                 @if (item.Poster != null)
                 {
-                    <img class="img-rounded" style="max-height:300px;max-width:250px" src="@Url.Action("GetImage", "Cinema", new { name = item.Name })" />
+                    <img class="img-rounded" style="max-height:300px;max-width:250px" src="@Url.Action("GetImage", "Cinema", new { id = item.CinemaID })" />
                 }
                 <div>
                     <span class="display-label media-heading">

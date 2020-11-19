@@ -39,5 +39,13 @@ namespace CinemaPortal_ASP.NET_Core.Models
         [DisplayName("Пользователь:")]
         public string UserName { get; set; }
 
+        public bool Equals(Cinema cinema)
+        {
+            if (this.Description == cinema.Description && this.FilmMaker == cinema.FilmMaker && this.ImageMimeType == cinema.ImageMimeType && this.Name == cinema.Name && this.Poster == cinema.Poster && this.UserName == cinema.UserName && this.Year == cinema.Year)
+            {
+                return true;
+            }
+            else return false;
+        }
     }
 }

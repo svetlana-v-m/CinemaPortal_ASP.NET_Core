@@ -17,10 +17,9 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
         {
             _context = context;
         }
-        public FileContentResult GetImage(string name)
+        public async Task<FileContentResult> GetImage(int id)
         {
-            Cinema cinema = _context.FindCinemaByTitle(name);
-
+            Cinema cinema = await _context.FindCinemaByIDAsync(id);
             if (cinema != null) return File(cinema.Poster, cinema.ImageMimeType);
             else return null;
         }
@@ -53,8 +52,12 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
         public async Task<IActionResult> Details(int id, string listName)
         {
             Cinema cinema = await _context.FindCinemaByIDAsync(id);
-            DetailsViewModel dvm = new DetailsViewModel { Cinema = cinema, ListName = listName };
-            return View(dvm);
+            if (cinema == null) return NotFound();
+            else
+            {
+                DetailsViewModel dvm = new DetailsViewModel { Cinema = cinema, ListName = listName };
+                return View(dvm);
+            }
         }
 
         [Authorize]
@@ -87,25 +90,28 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
                 newCinema.UserName = User.Identity.Name;
                 await _context.AddAsync(newCinema);
                 await _context.SaveChangesAsync();
-                var cinema = await _context.FindCinemaByTitleAsync(newCinema.Name);
-                return RedirectToAction("Details", new { id = cinema.CinemaID, listName="AllCinema" });
+                                                
+                return RedirectToAction("Details", new { id = newCinema.CinemaID, listName="AllCinema" });
             }
         }
 
         [Authorize]
         [HttpGet]
-        public ActionResult Edit(string name, string listName)
+        public async Task<ActionResult> Edit(int id, string listName)
         {
-            Cinema c = _context.FindCinemaByTitle(name);
+            Cinema c = await _context.FindCinemaByIDAsync(id);
             if (c == null) return NotFound();
-            EditCinemaViewModel evm = new EditCinemaViewModel { Cinema = c,ListName=listName };
-            return View(evm);
+            else
+            {
+                EditCinemaViewModel evm = new EditCinemaViewModel { Cinema = c, ListName = listName };
+                return View(evm);
+            }
         }
 
 
         [Authorize]
         [HttpPost]
-        public ActionResult Edit(Cinema cinema,IFormFile poster, string _listName)
+        public async Task<ActionResult> Edit(Cinema cinema,IFormFile poster, string _listName)
         {
             if (!ModelState.IsValid)
             {
@@ -119,19 +125,23 @@ namespace CinemaPortal_ASP.NET_Core.Controllers
                     cinema.Poster = new byte[poster.Length];
                     using (var binaryReader = new BinaryReader(poster.OpenReadStream())) cinema.Poster = binaryReader.ReadBytes((int)poster.Length);
                 }
-                 _context.Update(cinema);
-                _context.SaveChanges();
+                _context.Update(cinema);
+                await _context.SaveChangesAsync();
                 return RedirectToAction("Details", new { id = cinema.CinemaID, listName= _listName});
             }
   
         }
 
         [Authorize]
-        public ActionResult Delete(int id, string listName)
+        public async Task<IActionResult> Delete(int id, string listName)
         {
-            Cinema cinema = _context.FindCinemaByID(id);
-            _context.CinemaCollection.Remove(cinema);
-            _context.SaveChanges();
+            Cinema cinema = await _context.FindCinemaByIDAsync(id);
+            if (cinema != null)
+            {
+                _context.Remove(cinema);
+                await _context.SaveChangesAsync();
+            }
+            else return NotFound();
             if (listName == "AllCinema") return RedirectToAction("Index", "Home");
             else return RedirectToAction("MyCinema", "Cinema");
         }

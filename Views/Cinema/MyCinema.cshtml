@@ -30,7 +30,7 @@
                             <div class="card-body">
                                    @if (item.Poster != null)
                                     {
-                                        <img class="card-img-top" src="@Url.Action("GetImage", "Cinema", new { name = item.Name })" />
+                                        <img class="card-img-top" src="@Url.Action("GetImage", "Cinema", new { id = item.CinemaID })" />
                                     }
                                 
                             </div>
